@@ -7,20 +7,20 @@ extern crate rocket;
 mod http;
 mod mqtt;
 mod serial;
+mod output;
 
-use mqtt::homeassistant::ToMqttHomeAssistant;
-use mqtt::MqttSender;
+use mqtt::homeassistant::MqttSinkHomeAssistant;
 
 fn main() {
     println!("prpd");
 
-    let mut sender = MqttSender::new();
-    sender.add_sink(Box::new(ToMqttHomeAssistant::new()));
+    let mut output = output::Output::new();
+    output.add_sink(Box::new(MqttSinkHomeAssistant::new()));
 
     match env::var("PRPD_ACTION") {
         Ok(action) => match action.as_str() {
-            "serial" => serial::main(sender),
-            "http" => http::main(sender),
+            "serial" => serial::main(output),
+            "http" => http::main(output),
             _ => panic!("do not understand action"),
         },
         _ => panic!("$PRPD_ACTION has to be set to 'serial' or 'http'."),

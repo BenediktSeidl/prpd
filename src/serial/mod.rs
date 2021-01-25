@@ -6,7 +6,7 @@ extern crate crc_any;
 
 use crc_any::CRC;
 
-use super::mqtt::MqttSender;
+use super::output::Output;
 
 mod data;
 
@@ -18,7 +18,7 @@ pub fn check_crc(data: &Vec<u8>) -> bool {
     return data.as_slice()[len - 2..] == crc;
 }
 
-pub fn main(mut sender: MqttSender) {
+pub fn main(mut output: Output) {
     let specs = data::get_specs();
 
     let port_name = env::var("PRPD_SERIAL_PORT").expect("need to set $PRPD_SERIAL_PORT");
@@ -82,7 +82,7 @@ pub fn main(mut sender: MqttSender) {
             let uid = &format!("device_{}-address_{}", device_address, address);
 
             if let Some(spec) = specs.get(&address) {
-                sender.send(super::mqtt::Spec {
+                output.sensor(super::output::Spec {
                     uid: uid,
                     value: value * spec.factor,
                     name: &format!(
@@ -93,7 +93,7 @@ pub fn main(mut sender: MqttSender) {
                     unit_of_measurement: &spec.unit_of_measurement,
                 });
             } else {
-                sender.send(super::mqtt::Spec {
+                output.sensor(super::output::Spec {
                     uid: uid,
                     value: value,
                     name: &format!("unknown-{}", uid),

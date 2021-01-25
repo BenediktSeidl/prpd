@@ -1,10 +1,13 @@
 use paho_mqtt;
+use paho_mqtt::message::Message;
 use serde;
 use serde::Serialize;
-use std::collections::HashSet;
 
-use super::Spec;
-use super::ToMqtt;
+use std::collections::HashSet;
+use std::env;
+use std::time::Duration;
+
+use super::super::output::{Sink, Spec};
 
 fn is_str_none(value: &String) -> bool {
     return value == "None";
@@ -25,20 +28,32 @@ struct HassConfig<'a> {
     pub value_template: &'a String,
 }
 
-pub struct ToMqttHomeAssistant {
+pub struct MqttSinkHomeAssistant {
     config_sent: HashSet<String>,
+    client: paho_mqtt::Client,
 }
 
-impl ToMqttHomeAssistant {
-    pub fn new() -> ToMqttHomeAssistant {
-        return ToMqttHomeAssistant {
+impl MqttSinkHomeAssistant {
+    pub fn new() -> MqttSinkHomeAssistant {
+        let uri = env::var("PRPD_MQTT_HASS_URI").unwrap_or_else(|_| "tcp://localhost:1883".to_string());
+        let mut client = paho_mqtt::Client::new(uri).expect("Error creating the client");
+        client.set_timeout(Duration::from_secs(5));
+
+        client.connect(None).expect("Unable to connect");
+
+        return MqttSinkHomeAssistant {
             config_sent: HashSet::new(),
+            client,
         };
     }
 }
 
-impl ToMqtt for ToMqttHomeAssistant {
-    fn log(&mut self, log: &String) -> Vec<paho_mqtt::Message> {
+impl super::MqttSinkTrait for MqttSinkHomeAssistant {
+    fn get_mqtt_client<'a>(&'a self) -> &'a paho_mqtt::Client {
+        return &self.client;
+    }
+
+    fn log_to_mqtt(&mut self, log: &String) -> Vec<Message> {
         let mut v = Vec::new();
         v.push(
             paho_mqtt::MessageBuilder::new()
@@ -47,10 +62,11 @@ impl ToMqtt for ToMqttHomeAssistant {
                 .qos(1)
                 .finalize(),
         );
-        return v;
+        return v
     }
 
-    fn to_mqtt(&mut self, spec: &Spec) -> Vec<paho_mqtt::Message> {
+    fn sensor_to_mqtt(&mut self, spec: &super::super::output::Spec) -> Vec<Message> {
+    //fn to_mqtt(&mut self, spec: &Spec) -> Vec<paho_mqtt::Message> {
         let mut v = Vec::new();
 
         let topic_prefix = format!("homeassistant/sensor/1/{}", spec.uid);

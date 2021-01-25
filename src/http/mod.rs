@@ -5,26 +5,26 @@ use serde_json;
 use serde_json::Value;
 use std::sync::Mutex;
 
-use super::mqtt::MqttSender;
+use super::output::Output;
 
 pub mod data;
 
 extern crate paho_mqtt as mqtt;
 
-pub fn main(mut sender: MqttSender) {
+pub fn main(mut output: Output) {
     let spec = data::get_specs();
 
     rocket::ignite()
         .mount("/", routes![logs_json])
         .mount("/", routes![events_json])
-        .manage(Mutex::new(sender))
+        .manage(Mutex::new(output))
         .manage(spec)
         .launch();
 }
 
 #[post("/events.json", format = "json", data = "<body>")]
-fn events_json(body: Json<Value>, sender: State<Mutex<MqttSender>>) -> Created<Json<Value>> {
-    sender
+fn events_json(body: Json<Value>, output: State<Mutex<Output>>) -> Created<Json<Value>> {
+    output
         .lock()
         .unwrap()
         .log(serde_json::to_string(&body.into_inner()).unwrap());
@@ -60,7 +60,7 @@ fn events_json(body: Json<Value>, sender: State<Mutex<MqttSender>>) -> Created<J
 #[post("/logs.json", format = "json", data = "<body>")]
 fn logs_json(
     body: Json<Value>,
-    sender: State<Mutex<MqttSender>>,
+    output: State<Mutex<Output>>,
     specs: State<data::HttpSpecs>,
 ) -> Created<Json<Value>> {
     let json: Value = body.into_inner();
@@ -78,7 +78,7 @@ fn logs_json(
                     module_id,
                     param_id,
                 }) {
-                    sender.lock().unwrap().send(super::mqtt::Spec {
+                    output.lock().unwrap().sensor(super::output::Spec {
                         uid: uid,
                         value: value as f64 * spec.factor,
                         name: &spec.name,
@@ -86,7 +86,7 @@ fn logs_json(
                         unit_of_measurement: &spec.unit_of_measurement,
                     });
                 } else {
-                    sender.lock().unwrap().send(super::mqtt::Spec {
+                    output.lock().unwrap().sensor(super::output::Spec {
                         uid: uid,
                         value: value as f64,
                         name: &format!("unknown-{}", uid),
