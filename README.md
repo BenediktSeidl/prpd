@@ -52,6 +52,20 @@ RS485 bus, an ideal feature for our application.
 
 ## Development
 
+### Installing rust and build dependencies
+
+```
+# installing rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh # https://www.rust-lang.org/tools/install
+source $HOME/.cargo/env
+rustup toolchain install nightly
+rustup default nightly
+# installing build dependencies
+apt-get install pkg-config libudev-dev cmake
+# install target support (only if you want to run this on GL-AR150A)
+rustup target add mips-unknown-linux-musl
+```
+
 ### Testing locally
 
 ```bash
