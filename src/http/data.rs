@@ -26,6 +26,7 @@
 // OTHER DEALINGS IN THE SOFTWARE./
 
 use std::collections::HashMap;
+use crate::output::{Subject, UnitOfMeasurement, Phase};
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub struct HttpIndex {
@@ -37,8 +38,9 @@ pub struct HttpIndex {
 pub struct HttpParameterSpec {
     pub name: String,
     pub factor: f64,
-    pub class: String,
-    pub unit_of_measurement: String,
+    pub unit_of_measurement: UnitOfMeasurement,
+    pub subject: Subject,
+    pub phase: Phase,
 }
 
 pub type HttpSpecs = HashMap<HttpIndex, HttpParameterSpec>;
@@ -52,9 +54,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "f_dcac".into(),
-                unit_of_measurement: "Hz".into(),
+                unit_of_measurement: UnitOfMeasurement::Hz,
                 factor: 0.01,
-                class: "None".into(),
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -64,9 +67,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_grid_dcac".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -76,9 +80,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_grid_dcac".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -88,9 +93,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_dcac_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -100,9 +106,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_dcac_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -112,9 +119,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_local".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::Local,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -124,9 +132,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_local".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Local,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -136,9 +145,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_local_dcac_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Local,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -148,9 +158,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_bus_dcac".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Unknown,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -160,9 +171,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_dcac".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::PowerRouter,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -172,9 +184,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_L1".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::Grid,
+                phase: Phase::L1,
             },
         ),
         (
@@ -184,9 +197,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_L1".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Grid,
+                phase: Phase::L1,
             },
         ),
         (
@@ -196,9 +210,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_L1".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Grid,
+                phase: Phase::L1,
             },
         ),
         (
@@ -208,9 +223,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_L1_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Grid,
+                phase: Phase::L1,
             },
         ),
         (
@@ -220,9 +236,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_L2".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::Grid,
+                phase: Phase::L2,
             },
         ),
         (
@@ -232,9 +249,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_L2".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Grid,
+                phase: Phase::L2,
             },
         ),
         (
@@ -244,9 +262,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_L2".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Grid,
+                phase: Phase::L2,
             },
         ),
         (
@@ -256,9 +275,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_L2_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Grid,
+                phase: Phase::L2,
             },
         ),
         (
@@ -268,9 +288,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_L3".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::Grid,
+                phase: Phase::L3,
             },
         ),
         (
@@ -280,9 +301,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_L3".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Grid,
+                phase: Phase::L3,
             },
         ),
         (
@@ -292,9 +314,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_L3".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Grid,
+                phase: Phase::L3,
             },
         ),
         (
@@ -304,9 +327,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_L3_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Grid,
+                phase: Phase::L3,
             },
         ),
         (
@@ -316,9 +340,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_1_solar".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -328,9 +353,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_1_solar".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -340,9 +366,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_1_solar".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -352,9 +379,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_solar_1_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -364,9 +392,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_1_solar".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -376,9 +405,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_2_solar".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -388,9 +418,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_2_solar".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -400,9 +431,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_2_solar".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -412,9 +444,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_solar_2_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -424,9 +457,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_2_solar".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -436,9 +470,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_solar".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -448,9 +483,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_solar_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Photovoltaics,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -460,9 +496,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "f_platform".into(),
-                unit_of_measurement: "Hz".into(),
+                unit_of_measurement: UnitOfMeasurement::Hz,
                 factor: 0.01,
-                class: "None".into(),
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -472,9 +509,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_grid_platform".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.1,
-                class: "voltage".into(),
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -484,9 +522,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_platform".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -496,9 +535,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_grid_platform".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -508,9 +548,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_platform_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.,
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -520,9 +561,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_platform_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.,
+                subject: Subject::Platform,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -532,9 +574,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_batt".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -544,9 +587,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_batt".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -556,9 +600,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_batt".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -568,9 +613,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "P_bus_batt".into(),
-                unit_of_measurement: "W".into(),
+                unit_of_measurement: UnitOfMeasurement::W,
                 factor: 1.0,
-                class: "power".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -580,9 +626,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_battery_produced".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -592,9 +639,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "W_battery_consumed".into(),
-                unit_of_measurement: "kWh".into(),
-                factor: 0.001,
-                class: "energy".into(),
+                unit_of_measurement: UnitOfMeasurement::Wh,
+                factor: 0.001 * 1000.0,
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -604,9 +652,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "SOC".into(),
-                unit_of_measurement: "%".into(),
+                unit_of_measurement: UnitOfMeasurement::Percent,
                 factor: 1.0,
-                class: "battery".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -616,9 +665,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_batt".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -628,9 +678,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "T_batt_module".into(),
-                unit_of_measurement: "°C".into(),
+                unit_of_measurement: UnitOfMeasurement::DegreeC,
                 factor: 0.1,
-                class: "temperature".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -640,9 +691,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_charge".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -652,9 +704,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_charge".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -664,9 +717,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "V_discharge".into(),
-                unit_of_measurement: "V".into(),
+                unit_of_measurement: UnitOfMeasurement::V,
                 factor: 0.01,
-                class: "voltage".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
         (
@@ -676,9 +730,10 @@ pub fn get_specs() -> HttpSpecs {
             },
             HttpParameterSpec {
                 name: "I_discharge".into(),
-                unit_of_measurement: "A".into(),
+                unit_of_measurement: UnitOfMeasurement::A,
                 factor: 0.01,
-                class: "current".into(),
+                subject: Subject::Battery,
+                phase: Phase::Irrelevant,
             },
         ),
     ]

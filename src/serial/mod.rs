@@ -6,7 +6,7 @@ extern crate crc_any;
 
 use crc_any::CRC;
 
-use super::output::Output;
+use super::output::{Output, Source, Phase, Subject, UnitOfMeasurement};
 
 mod data;
 
@@ -81,24 +81,31 @@ pub fn main(mut output: Output) {
             let value = i32::from_be_bytes(fixed) as f64;
             let uid = &format!("device_{}-address_{}", device_address, address);
 
+            let subject = match device_address {
+                1 => Subject::Grid,
+                2 => Subject::Photovoltaics,
+                _ => Subject::Unknown,
+            };
+
             if let Some(spec) = specs.get(&address) {
                 output.sensor(super::output::Spec {
+                    name: &spec.name,
                     uid: uid,
                     value: value * spec.factor,
-                    name: &format!(
-                        "{}-{}-{}-{}",
-                        device_address, spec.name, spec.class, spec.unit_of_measurement
-                    ),
-                    class: &spec.class,
+                    source: &Source::Serial,
+                    phase: &spec.phase,
+                    subject: &subject,
                     unit_of_measurement: &spec.unit_of_measurement,
                 });
             } else {
                 output.sensor(super::output::Spec {
+                    name: &format!("unknown-{}", uid),
                     uid: uid,
                     value: value,
-                    name: &format!("unknown-{}", uid),
-                    class: &"None".into(),
-                    unit_of_measurement: &"".into(),
+                    source: &Source::Serial,
+                    phase: &Phase::Irrelevant,
+                    subject: &Subject::Unknown,
+                    unit_of_measurement: &UnitOfMeasurement::Unknown,
                 });
             }
         }

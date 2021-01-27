@@ -63,14 +63,17 @@ impl Sink for PrometheusSink {
     fn sensor(&mut self, spec: &Spec) {
         let milliseconds_since_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-        let prom_id = format!("prpd_{}", &spec.class);
+        let prom_id = format!("prpd_{}", &spec.subject);
         let metric = format!(
-            "#TYPE {prom_id} gauge\n{prom_id}{{name=\"{name}\",uid=\"{uid}\",unit=\"{unit}\"}} {value} {milliseconds_since_epoch}\n",
+            "#TYPE {prom_id} gauge
+            {prom_id}{{name=\"{name}\",uid=\"{uid}\",unit=\"{unit}\",source=\"{source}\",phase=\"{phase}\"}} {value} {milliseconds_since_epoch}\n",
              prom_id=&prom_id,
              unit=&spec.unit_of_measurement, 
              uid=&spec.uid,
              name=&spec.name,
              value=&spec.value,
+             source=&spec.source,
+             phase=&spec.phase,
              );
         self.metrics.lock().unwrap().insert(spec.uid.to_string(), metric);
     }

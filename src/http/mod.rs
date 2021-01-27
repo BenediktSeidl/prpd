@@ -5,7 +5,7 @@ use serde_json;
 use serde_json::Value;
 use std::sync::Mutex;
 
-use super::output::Output;
+use super::output::{Output, Source, Phase, Subject, UnitOfMeasurement};
 
 pub mod data;
 
@@ -79,19 +79,23 @@ fn logs_json(
                     param_id,
                 }) {
                     output.lock().unwrap().sensor(super::output::Spec {
+                        name: &spec.name,
                         uid: uid,
                         value: value as f64 * spec.factor,
-                        name: &spec.name,
-                        class: &spec.class,
+                        source: &Source::Http,
+                        phase: &spec.phase,
+                        subject: &spec.subject,
                         unit_of_measurement: &spec.unit_of_measurement,
                     });
                 } else {
                     output.lock().unwrap().sensor(super::output::Spec {
-                        uid: uid,
-                        value: value as f64,
                         name: &format!("unknown-{}", uid),
-                        class: &"None".into(),
-                        unit_of_measurement: &"".into(),
+                        uid: uid,
+                        source: &Source::Http,
+                        phase: &Phase::Irrelevant,
+                        subject: &Subject::Unknown,
+                        value: value as f64,
+                        unit_of_measurement: &UnitOfMeasurement::Unknown,
                     });
                 }
             } else {

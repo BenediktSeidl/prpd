@@ -8,6 +8,7 @@ use std::env;
 use std::time::Duration;
 
 use super::super::output::{Sink, Spec};
+use crate::output::{UnitOfMeasurement, Subject};
 
 fn is_str_none(value: &String) -> bool {
     return value == "None";
@@ -72,10 +73,26 @@ impl super::MqttSinkTrait for MqttSinkHomeAssistant {
         let topic_prefix = format!("homeassistant/sensor/1/{}", spec.uid);
 
         if !self.config_sent.contains(spec.uid) {
+
+            // https://www.home-assistant.io/integrations/sensor/#device-class
+            let device_class = match spec.unit_of_measurement {
+                UnitOfMeasurement::DegreeC => "temperature",
+                UnitOfMeasurement::W => "power",
+                UnitOfMeasurement::VA => "power",
+                UnitOfMeasurement::A => "current",
+                UnitOfMeasurement::Wh => "energy",
+                UnitOfMeasurement::V => "voltage",
+                UnitOfMeasurement::Percent => match spec.subject {
+                    Subject::Battery => "battery",
+                    _ => "None",
+                },
+                _ => "None",
+            };
+
             let data = HassConfig {
-                device_class: spec.class,
+                device_class: &device_class.into(),
                 name: spec.name,
-                unit_of_measurement: spec.unit_of_measurement,
+                unit_of_measurement: &format!("{}", &spec.unit_of_measurement),
                 state_topic: &format!("{}/state", topic_prefix),
                 value_template: &"{{ value_json.value}}".into(),
             };
