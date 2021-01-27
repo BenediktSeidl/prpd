@@ -50,6 +50,20 @@ RS485 bus, an ideal feature for our application.
 
 ## Configuration
 
+Configuration is done via environment variables.
+
+* `PRPD_ACTION`: how to obtain the data. either `serial` or `http`. If you want
+  to get data from http and serial, you have to run the programm twice.
+* `PRPD_OUTPUT_HASS_ACTIVE`: `1` if you want to activate the homeassistant output
+* `PRPD_OUTPUT_HASS_MQTT_URI`: mqtt broker for homeassistant output, defaults to
+  `tcp://localhost:1883`
+* `PRPD_OUTPUT_PROM_ACTIVE`: `1` if you want to activate the prometheus output
+* `PRPD_OUTPUT_PROM_PORT`: sets the port of the prometheus output. If you want
+  to run serial and http in parallel, you have to specify two different ports
+  and configure two differen datasources. in prometheus.
+* `PRPD_SERIAL_PORT`: serial port (like `/dev/ttyUSB0`) where to listen for
+  data
+
 ## Development
 
 ### Installing rust and build dependencies

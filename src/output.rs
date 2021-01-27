@@ -122,6 +122,10 @@ impl Output {
         self.sinks.push(sink);
     }
 
+    pub fn len(&self) -> usize {
+        return self.sinks.len();
+    }
+
     pub fn sensor(&mut self, spec: Spec) {
         for sink in &mut self.sinks {
             sink.sensor(&spec);

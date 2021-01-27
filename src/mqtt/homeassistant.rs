@@ -36,7 +36,7 @@ pub struct MqttSinkHomeAssistant {
 
 impl MqttSinkHomeAssistant {
     pub fn new() -> MqttSinkHomeAssistant {
-        let uri = env::var("PRPD_MQTT_HASS_URI").unwrap_or_else(|_| "tcp://localhost:1883".to_string());
+        let uri = env::var("PRPD_OUTPUT_HASS_MQTT_URI").unwrap_or_else(|_| "tcp://localhost:1883".to_string());
         let mut client = paho_mqtt::Client::new(uri).expect("Error creating the client");
         client.set_timeout(Duration::from_secs(5));
 

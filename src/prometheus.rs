@@ -1,3 +1,4 @@
+use std::env;
 use std::thread;
 use rocket::State;
 use rocket::config::{Config, Environment};
@@ -21,11 +22,12 @@ impl PrometheusSink {
 
 
         let metrics_clone = metrics.clone();
+        let port = env::var("PRPD_OUTPUT_PROM_PORT").expect("$PRPD_OUTPUT_PROM_PORT needs to be set").parse::<u16>().expect("can not parse $PRPD_OUTPUT_PROM_PORT");
 
         thread::spawn(move || {
         let config = Config::build(Environment::Staging)
             .address("127.0.0.1")
-            .port(8888)
+            .port(port)
             .workers(1)
             .unwrap();
 
