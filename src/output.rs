@@ -65,7 +65,8 @@ impl std::fmt::Display for UnitOfMeasurement {
                 UnitOfMeasurement::A => "A",
                 UnitOfMeasurement::Wh => "Wh",
                 UnitOfMeasurement::Percent => "%",
-                _ => "",
+                UnitOfMeasurement::Hz => "Hz",
+                UnitOfMeasurement::Unknown => "-",
             }
         )
     }
@@ -78,7 +79,7 @@ impl std::fmt::Display for Phase {
                 Phase::L1 => "l1",
                 Phase::L2 => "l2",
                 Phase::L3 => "l3",
-                Phase::Irrelevant => "",
+                Phase::Irrelevant => "-",
             }
         )
     }
