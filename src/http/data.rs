@@ -25,8 +25,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE./
 
+use crate::output::{Phase, Subject, UnitOfMeasurement};
 use std::collections::HashMap;
-use crate::output::{Subject, UnitOfMeasurement, Phase};
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub struct HttpIndex {

@@ -8,7 +8,7 @@ use std::env;
 use std::time::Duration;
 
 use super::super::output::{Sink, Spec};
-use crate::output::{UnitOfMeasurement, Subject};
+use crate::output::{Subject, UnitOfMeasurement};
 
 fn is_str_none(value: &String) -> bool {
     return value == "None";
@@ -36,7 +36,8 @@ pub struct MqttSinkHomeAssistant {
 
 impl MqttSinkHomeAssistant {
     pub fn new() -> MqttSinkHomeAssistant {
-        let uri = env::var("PRPD_OUTPUT_HASS_MQTT_URI").unwrap_or_else(|_| "tcp://localhost:1883".to_string());
+        let uri = env::var("PRPD_OUTPUT_HASS_MQTT_URI")
+            .unwrap_or_else(|_| "tcp://localhost:1883".to_string());
         let mut client = paho_mqtt::Client::new(uri).expect("Error creating the client");
         client.set_timeout(Duration::from_secs(5));
 
@@ -63,17 +64,16 @@ impl super::MqttSinkTrait for MqttSinkHomeAssistant {
                 .qos(1)
                 .finalize(),
         );
-        return v
+        return v;
     }
 
     fn sensor_to_mqtt(&mut self, spec: &super::super::output::Spec) -> Vec<Message> {
-    //fn to_mqtt(&mut self, spec: &Spec) -> Vec<paho_mqtt::Message> {
+        //fn to_mqtt(&mut self, spec: &Spec) -> Vec<paho_mqtt::Message> {
         let mut v = Vec::new();
 
         let topic_prefix = format!("homeassistant/sensor/1/{}", spec.uid);
 
         if !self.config_sent.contains(spec.uid) {
-
             // https://www.home-assistant.io/integrations/sensor/#device-class
             let device_class = match spec.unit_of_measurement {
                 UnitOfMeasurement::DegreeC => "temperature",

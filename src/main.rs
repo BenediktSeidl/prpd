@@ -7,12 +7,12 @@ extern crate rocket;
 
 mod http;
 mod mqtt;
-mod serial;
 mod output;
 mod prometheus;
+mod serial;
 
-use mqtt::homeassistant::MqttSinkHomeAssistant;
 use crate::prometheus::PrometheusSink;
+use mqtt::homeassistant::MqttSinkHomeAssistant;
 
 fn main() {
     println!("prpd");

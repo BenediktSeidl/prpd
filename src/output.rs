@@ -32,7 +32,7 @@ pub enum Phase {
 
 pub enum Source {
     Http,
-    Serial
+    Serial,
 }
 
 pub struct Spec<'a> {
@@ -55,68 +55,70 @@ pub struct Output {
 }
 
 impl std::fmt::Display for UnitOfMeasurement {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        formatter.write_str(
-            match self {
-                UnitOfMeasurement::V => "V",
-                UnitOfMeasurement::DegreeC => "°C",
-                UnitOfMeasurement::W => "W",
-                UnitOfMeasurement::VA => "VA",
-                UnitOfMeasurement::A => "A",
-                UnitOfMeasurement::Wh => "Wh",
-                UnitOfMeasurement::Percent => "%",
-                UnitOfMeasurement::Hz => "Hz",
-                UnitOfMeasurement::Unknown => "-",
-            }
-        )
+    fn fmt(
+        &self,
+        formatter: &mut std::fmt::Formatter<'_>,
+    ) -> std::result::Result<(), std::fmt::Error> {
+        formatter.write_str(match self {
+            UnitOfMeasurement::V => "V",
+            UnitOfMeasurement::DegreeC => "°C",
+            UnitOfMeasurement::W => "W",
+            UnitOfMeasurement::VA => "VA",
+            UnitOfMeasurement::A => "A",
+            UnitOfMeasurement::Wh => "Wh",
+            UnitOfMeasurement::Percent => "%",
+            UnitOfMeasurement::Hz => "Hz",
+            UnitOfMeasurement::Unknown => "-",
+        })
     }
 }
 
 impl std::fmt::Display for Phase {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        formatter.write_str(
-            match self {
-                Phase::L1 => "l1",
-                Phase::L2 => "l2",
-                Phase::L3 => "l3",
-                Phase::Irrelevant => "-",
-            }
-        )
+    fn fmt(
+        &self,
+        formatter: &mut std::fmt::Formatter<'_>,
+    ) -> std::result::Result<(), std::fmt::Error> {
+        formatter.write_str(match self {
+            Phase::L1 => "l1",
+            Phase::L2 => "l2",
+            Phase::L3 => "l3",
+            Phase::Irrelevant => "-",
+        })
     }
 }
 
 impl std::fmt::Display for Source {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        formatter.write_str(
-            match self {
-                Source::Http => "http",
-                Source::Serial => "serial",
-            }
-        )
+    fn fmt(
+        &self,
+        formatter: &mut std::fmt::Formatter<'_>,
+    ) -> std::result::Result<(), std::fmt::Error> {
+        formatter.write_str(match self {
+            Source::Http => "http",
+            Source::Serial => "serial",
+        })
     }
 }
 
 impl std::fmt::Display for Subject {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        formatter.write_str(
-            match self {
-                Subject::Battery => "battery",
-                Subject::Grid => "grid",
-                Subject::PowerRouter => "powerrouter",
-                Subject::Photovoltaics => "photovoltaics",
-                Subject::Platform => "platform",
-                Subject::Local => "local",
-                Subject::Unknown => "unknown",
-            }
-        )
+    fn fmt(
+        &self,
+        formatter: &mut std::fmt::Formatter<'_>,
+    ) -> std::result::Result<(), std::fmt::Error> {
+        formatter.write_str(match self {
+            Subject::Battery => "battery",
+            Subject::Grid => "grid",
+            Subject::PowerRouter => "powerrouter",
+            Subject::Photovoltaics => "photovoltaics",
+            Subject::Platform => "platform",
+            Subject::Local => "local",
+            Subject::Unknown => "unknown",
+        })
     }
 }
 
 impl Output {
     pub fn new() -> Output {
-        return Output {
-            sinks: Vec::new(),
-        };
+        return Output { sinks: Vec::new() };
     }
 
     pub fn add_sink(&mut self, sink: Box<dyn Sink + Send + Sync>) {

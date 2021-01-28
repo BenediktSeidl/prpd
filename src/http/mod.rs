@@ -5,7 +5,7 @@ use serde_json;
 use serde_json::Value;
 use std::sync::Mutex;
 
-use super::output::{Output, Source, Phase, Subject, UnitOfMeasurement};
+use super::output::{Output, Phase, Source, Subject, UnitOfMeasurement};
 
 pub mod data;
 

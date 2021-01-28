@@ -8,8 +8,10 @@ pub trait MqttSinkTrait {
     fn get_mqtt_client<'a>(&'a self) -> &'a paho_mqtt::Client;
 }
 
-
-impl<T> super::output::Sink for T where T: MqttSinkTrait {
+impl<T> super::output::Sink for T
+where
+    T: MqttSinkTrait,
+{
     fn sensor(&mut self, spec: &super::output::Spec) {
         for message in self.sensor_to_mqtt(&spec) {
             if let Err(e) = self.get_mqtt_client().publish(message) {

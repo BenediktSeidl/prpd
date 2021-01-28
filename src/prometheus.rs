@@ -1,10 +1,10 @@
-use std::env;
-use std::thread;
-use rocket::State;
-use rocket::config::{Config, Environment};
-use std::sync::{Arc, Mutex};
-use std::collections::HashMap;
 use crate::output::{Sink, Spec};
+use rocket::config::{Config, Environment};
+use rocket::State;
+use std::collections::HashMap;
+use std::env;
+use std::sync::{Arc, Mutex};
+use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 // TODO: check if https://github.com/tikv/rust-prometheus/issues/315 is resolved, then we could use
@@ -20,29 +20,28 @@ impl PrometheusSink {
     pub fn new() -> PrometheusSink {
         let metrics = Arc::new(Mutex::new(HashMap::new()));
 
-
         let metrics_clone = metrics.clone();
-        let port = env::var("PRPD_OUTPUT_PROM_PORT").expect("$PRPD_OUTPUT_PROM_PORT needs to be set").parse::<u16>().expect("can not parse $PRPD_OUTPUT_PROM_PORT");
+        let port = env::var("PRPD_OUTPUT_PROM_PORT")
+            .expect("$PRPD_OUTPUT_PROM_PORT needs to be set")
+            .parse::<u16>()
+            .expect("can not parse $PRPD_OUTPUT_PROM_PORT");
 
         thread::spawn(move || {
-        let config = Config::build(Environment::Production)
-            .address("0.0.0.0")
-            .port(port)
-            .workers(1)
-            .unwrap();
+            let config = Config::build(Environment::Production)
+                .address("0.0.0.0")
+                .port(port)
+                .workers(1)
+                .unwrap();
 
-        rocket::custom(config)
-            .mount("/", routes![metric])
-            .manage(metrics_clone)
-            .launch();
+            rocket::custom(config)
+                .mount("/", routes![metric])
+                .manage(metrics_clone)
+                .launch();
         });
 
-        PrometheusSink {
-            metrics
-        }
+        PrometheusSink { metrics }
     }
 }
-
 
 #[get("/metrics")]
 fn metric(metrics: State<Arc<Mutex<Metrics>>>) -> String {
@@ -59,27 +58,31 @@ fn metric(metrics: State<Arc<Mutex<Metrics>>>) -> String {
     return result;
 }
 
-
-
 impl Sink for PrometheusSink {
     fn sensor(&mut self, spec: &Spec) {
-        let milliseconds_since_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+        let milliseconds_since_epoch = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis();
 
         let prom_id = format!("prpd_{}", &spec.subject);
         let metric = format!(
             "#TYPE {prom_id} gauge\n{prom_id}{{name=\"{name}\",uid=\"{uid}\",unit=\"{unit}\",source=\"{source}\",phase=\"{phase}\"}} {value} {milliseconds_since_epoch}\n",
              prom_id=&prom_id,
-             unit=&spec.unit_of_measurement, 
+             unit=&spec.unit_of_measurement,
              uid=&spec.uid,
              name=&spec.name,
              value=&spec.value,
              source=&spec.source,
              phase=&spec.phase,
              );
-        self.metrics.lock().unwrap().insert(spec.uid.to_string(), metric);
+        self.metrics
+            .lock()
+            .unwrap()
+            .insert(spec.uid.to_string(), metric);
     }
 
     fn log(&mut self, log: &String) {
-        // ignoring :-/ could at least count it?! 
+        // ignoring :-/ could at least count it?!
     }
 }

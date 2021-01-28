@@ -6,7 +6,7 @@ extern crate crc_any;
 
 use crc_any::CRC;
 
-use super::output::{Output, Source, Phase, Subject, UnitOfMeasurement};
+use super::output::{Output, Phase, Source, Subject, UnitOfMeasurement};
 
 mod data;
 
