@@ -5,6 +5,8 @@ use serde::Serialize;
 
 use std::collections::HashSet;
 use std::env;
+use std::sync::{Arc, Mutex};
+use std::thread;
 use std::time::Duration;
 
 use super::super::output::{Sink, Spec};
@@ -31,46 +33,64 @@ struct HassConfig<'a> {
 
 pub struct MqttSinkHomeAssistant {
     config_sent: HashSet<String>,
-    client: paho_mqtt::Client,
+    client: Arc<Mutex<paho_mqtt::Client>>,
 }
 
 impl MqttSinkHomeAssistant {
     pub fn new() -> MqttSinkHomeAssistant {
         let uri = env::var("PRPD_OUTPUT_HASS_MQTT_URI")
             .unwrap_or_else(|_| "tcp://localhost:1883".to_string());
+
         let mut client = paho_mqtt::Client::new(uri).expect("Error creating the client");
         client.set_timeout(Duration::from_secs(5));
 
-        client.connect(None).expect("Unable to connect");
+        let conn_opts = paho_mqtt::ConnectOptionsBuilder::new()
+            .keep_alive_interval(Duration::from_secs(20))
+            .connect_timeout(Duration::from_secs(1))
+            .retry_interval(Duration::from_secs(1))
+            .clean_session(true)
+            .finalize();
+
+        client.connect(conn_opts).expect("MQTT: Unable to connect");
+
+        let client_arc = Arc::new(Mutex::new(client));
+
+        let client_arc_clone = client_arc.clone();
+        thread::spawn(move || loop {
+            thread::sleep(Duration::from_secs(10));
+            let client = client_arc_clone.lock().unwrap();
+            if !client.is_connected() {
+                println!("mqtt disconnected, trying to reconnect");
+                match client.reconnect() {
+                    Err(e) => println!("MQTT: can not reconnect {}", e),
+                    Ok(_) => {}
+                }
+            }
+        });
 
         return MqttSinkHomeAssistant {
             config_sent: HashSet::new(),
-            client,
+            client: client_arc,
         };
     }
 }
 
 impl super::MqttSinkTrait for MqttSinkHomeAssistant {
-    fn get_mqtt_client<'a>(&'a self) -> &'a paho_mqtt::Client {
-        return &self.client;
+    fn log_to_mqtt(&mut self, log: &String) {
+        self.client
+            .lock()
+            .unwrap()
+            .publish(
+                paho_mqtt::MessageBuilder::new()
+                    .topic("prpd/logs")
+                    .payload(log.as_bytes())
+                    .qos(1)
+                    .finalize(),
+            )
+            .unwrap_or_else(|e| println!("MQTT: can not send {}", e));
     }
 
-    fn log_to_mqtt(&mut self, log: &String) -> Vec<Message> {
-        let mut v = Vec::new();
-        v.push(
-            paho_mqtt::MessageBuilder::new()
-                .topic("prpd/logs")
-                .payload(log.as_bytes())
-                .qos(1)
-                .finalize(),
-        );
-        return v;
-    }
-
-    fn sensor_to_mqtt(&mut self, spec: &super::super::output::Spec) -> Vec<Message> {
-        //fn to_mqtt(&mut self, spec: &Spec) -> Vec<paho_mqtt::Message> {
-        let mut v = Vec::new();
-
+    fn sensor_to_mqtt(&mut self, spec: &super::super::output::Spec) {
         let topic_prefix = format!("homeassistant/sensor/1/{}", spec.uid);
 
         if !self.config_sent.contains(spec.uid) {
@@ -96,23 +116,30 @@ impl super::MqttSinkTrait for MqttSinkHomeAssistant {
                 state_topic: &format!("{}/state", topic_prefix),
                 value_template: &"{{ value_json.value}}".into(),
             };
-            v.push(
-                paho_mqtt::MessageBuilder::new()
-                    .topic(format!("{}/config", topic_prefix))
-                    .payload(serde_json::to_string(&data).unwrap())
-                    .retained(true)
-                    .qos(1)
-                    .finalize(),
-            );
+            self.client
+                .lock()
+                .unwrap()
+                .publish(
+                    paho_mqtt::MessageBuilder::new()
+                        .topic(format!("{}/config", topic_prefix))
+                        .payload(serde_json::to_string(&data).unwrap())
+                        .retained(true)
+                        .qos(1)
+                        .finalize(),
+                )
+                .unwrap_or_else(|e| println!("MQTT: can not send {}", e));
             self.config_sent.insert(spec.uid.clone());
         }
-        v.push(
-            paho_mqtt::MessageBuilder::new()
-                .topic(format!("{}/state", topic_prefix))
-                .payload(serde_json::to_string(&HassState { value: spec.value }).unwrap())
-                .qos(1)
-                .finalize(),
-        );
-        return v;
+        self.client
+            .lock()
+            .unwrap()
+            .publish(
+                paho_mqtt::MessageBuilder::new()
+                    .topic(format!("{}/state", topic_prefix))
+                    .payload(serde_json::to_string(&HassState { value: spec.value }).unwrap())
+                    .qos(1)
+                    .finalize(),
+            )
+            .unwrap_or_else(|e| println!("MQTT: can not send {}", e));
     }
 }
