@@ -1,15 +1,15 @@
 # prpd
 
-prpd is a software and hardware solution to make Monitoring Information from the
-NEDAP PowerRouter available via MQTT although their cloud service was shot down
+prpd is a software and hardware solution to make monitoring information from the
+NEDAP PowerRouter available although their cloud service was shot down
 at 2021-01-31.
 
 The Methods were tested with NEDAP PowerRouter `PR37Bi` Version `7.1.2`.
 
-There are two ways to obtain the data:
 
+## Getting the data from the PowerRouter
 
-## HTTP
+### HTTP
 
 The PowerRouter normally sends monitoring data every minute via a HTTP-POST
 request to `logging1.PowerRouter.com`. This is done without any encryption, so
@@ -17,7 +17,7 @@ we can simple bend the network traffic into our direction and read the data.
 
 [More Information](doc/http.md)
 
-## RS485
+### RS485
 
 Some of the data is collected via a RS485 interface of EM24 Energy Sensors by
 Carlo Gavazzi. This data is transfered about every second. As the PowerRouter
@@ -26,13 +26,7 @@ simple tap into the data lines and listen to the communication.
 
 [More Information](doc/serial.md)
 
-## MQTT Output format
-
-* Homeassistant
-* OpenWB
-* Raw
-
-### Hardware
+#### Hardware
 
 In order to tab into the RS485 lines, one could access the EM24 Sensors and add
 some wires there, but the Sensors are in the fuse box and one doesn't mess with
@@ -47,6 +41,26 @@ that it can be configured in a way that it is not possible to write to the
 RS485 bus, an ideal feature for our application.
 
 [More Information](hardware/README.md)
+
+## Use the data from the PowerRouter
+
+prpw is written in a way that it should be possible to add you favourite
+output. Currently the following outputs are available:
+
+### MQTT Home Assistant
+
+Outputs the data on MQTT so it is possible for Home Assistant to auto discover
+all available Data.
+
+### OpenWB
+
+Output the data on MQTT so OpenWB can read the data. This is not done yet, but
+will be definitely implemented in the near future.
+
+### Prometheus
+
+With this output it's possible to scrape the data with prometheus.
+
 
 ## Configuration
 
