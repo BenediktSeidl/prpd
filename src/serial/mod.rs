@@ -75,7 +75,7 @@ pub fn main(mut output: Output) {
         // we have the data, and currently it only consists of 4 bytes, so we can chunk it
 
         for (i, data) in raw_data.chunks(4).enumerate() {
-            let address = starting_address + i as u16 * 4u16;
+            let address = starting_address + i as u16 * 2u16;
             // fix word order (this seems to be a modbus thing?!)
             let fixed: [u8; 4] = [data[2], data[3], data[0], data[1]];
             let value = i32::from_be_bytes(fixed) as f64;
