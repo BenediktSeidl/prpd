@@ -25,8 +25,8 @@ impl PrometheusSink {
         let port = env::var("PRPD_OUTPUT_PROM_PORT").expect("$PRPD_OUTPUT_PROM_PORT needs to be set").parse::<u16>().expect("can not parse $PRPD_OUTPUT_PROM_PORT");
 
         thread::spawn(move || {
-        let config = Config::build(Environment::Staging)
-            .address("127.0.0.1")
+        let config = Config::build(Environment::Production)
+            .address("0.0.0.0")
             .port(port)
             .workers(1)
             .unwrap();
@@ -67,8 +67,7 @@ impl Sink for PrometheusSink {
 
         let prom_id = format!("prpd_{}", &spec.subject);
         let metric = format!(
-            "#TYPE {prom_id} gauge
-            {prom_id}{{name=\"{name}\",uid=\"{uid}\",unit=\"{unit}\",source=\"{source}\",phase=\"{phase}\"}} {value} {milliseconds_since_epoch}\n",
+            "#TYPE {prom_id} gauge\n{prom_id}{{name=\"{name}\",uid=\"{uid}\",unit=\"{unit}\",source=\"{source}\",phase=\"{phase}\"}} {value} {milliseconds_since_epoch}\n",
              prom_id=&prom_id,
              unit=&spec.unit_of_measurement, 
              uid=&spec.uid,
