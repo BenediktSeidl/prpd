@@ -188,8 +188,3 @@ bash dev/build.sh
 ## Disclaimer
 
 Use at your own risk!
-
-## TODO
-
-* mqtt reconnect: Sat Jan 23 10:22:54 2021 daemon.info prpd[5349]: Error sending message: PahoDescr(-3, "Client disconnected")
-* retry when mqtt server not reachable at startup
