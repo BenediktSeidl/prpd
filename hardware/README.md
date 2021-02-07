@@ -14,3 +14,7 @@ lines of the CAT cable, just in case...
 ![prpd schematic](doc/prpd_schmeatic.png)
 
 ![prpd layout](doc/prpd_layout.png)
+
+![prpd pcb bottom](doc/pcb_bottom.jpg)
+
+![prpd pcb top](doc/pcb_top.jpg)
