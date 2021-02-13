@@ -1,5 +1,4 @@
 export PRPD_ACTION=serial
-export PRPD_SENDER_HASS=1
 export PRPD_SERIAL_PORT="/dev/ttyS11"
 
 export PRPD_OUTPUT_HASS_ACTIVE=1
