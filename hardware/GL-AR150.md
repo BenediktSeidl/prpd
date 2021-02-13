@@ -71,6 +71,10 @@ start_service() {
     procd_set_param env PRPD_ACTION=serial PRPD_SERIAL_PORT=/dev/ttyUSB0 PRPD_OUTPUT_HASS_MQTT_URI=tcp://mqtt-broker.local:1883/ PRPD_OUTPUT_HASS_ACTIVE=1 PRPD_OUTPUT_PROM_ACTIVE=1 PRPD_OUTPUT_PROM_PORT=8092
     procd_set_param stdout 1
     procd_set_param stderr 1
+    # when within 60 seconds after inital start,
+    # wait 10 seconds before restarting,
+    # retry 99 times, then give up
+    procd_set_param respawn 60 10 99
     procd_close_instance
 }
 ```
