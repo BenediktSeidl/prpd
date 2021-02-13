@@ -5,7 +5,7 @@ authors = ["Benedikt Seidl <benedikt.seidl@gmx.de>"]
 edition = "2018"
 
 [profile.release]
-opt-level = 'z'  # Optimize for size.
+opt-level = 's'  # Optimize for size.
 lto = true
 codegen-units = 1
 panic = 'abort'

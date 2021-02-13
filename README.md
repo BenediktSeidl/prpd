@@ -90,8 +90,10 @@ rustup toolchain install nightly
 rustup default nightly
 # installing build dependencies
 apt-get install pkg-config libudev-dev cmake
-# install target support (only if you want to run this on GL-AR150A)
+# install target support (only if you want to run this on GL-AR150)
 rustup target add mips-unknown-linux-musl
+# installing tool to compress executable (only if you want to run this on GL-AR150)
+apt-get install upx
 ```
 
 ### Testing locally
