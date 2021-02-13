@@ -5,6 +5,9 @@ use std::env;
 #[macro_use]
 extern crate rocket;
 
+#[macro_use]
+extern crate log;
+
 mod http;
 mod mqtt;
 mod output;
@@ -15,13 +18,16 @@ use crate::prometheus::PrometheusSink;
 use mqtt::homeassistant::MqttSinkHomeAssistant;
 
 fn main() {
-    println!("prpd");
+    env_logger::init();
+    info!("prpd starting up");
 
     let mut output = output::Output::new();
     if env::var("PRPD_OUTPUT_HASS_ACTIVE").unwrap_or_else(|_| "".into()) == "1" {
+        info!("adding homeassistant output");
         output.add_sink(Box::new(MqttSinkHomeAssistant::new()));
     }
     if env::var("PRPD_OUTPUT_PROM_ACTIVE").unwrap_or_else(|_| "".into()) == "1" {
+        info!("adding prometheus output");
         output.add_sink(Box::new(PrometheusSink::new()));
     }
 
@@ -31,9 +37,15 @@ fn main() {
 
     match env::var("PRPD_ACTION") {
         Ok(action) => match action.as_str() {
-            "serial" => serial::main(output),
-            "http" => http::main(output),
-            _ => panic!("do not understand action"),
+            "serial" => {
+                info!("starting serial input");
+                serial::main(output);
+            },
+            "http" => {
+                info!("starting http input");
+                http::main(output);
+            },
+            _ => panic!("do not understand $PRPD_ACTION"),
         },
         _ => panic!("$PRPD_ACTION has to be set to 'serial' or 'http'."),
     }

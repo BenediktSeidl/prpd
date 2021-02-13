@@ -18,6 +18,7 @@ pub struct PrometheusSink {
 
 impl PrometheusSink {
     pub fn new() -> PrometheusSink {
+        debug!("starting prometheus output");
         let metrics = Arc::new(Mutex::new(HashMap::new()));
 
         let metrics_clone = metrics.clone();
@@ -45,6 +46,7 @@ impl PrometheusSink {
 
 #[get("/metrics")]
 fn metric(metrics: State<Arc<Mutex<Metrics>>>) -> String {
+    debug!("request on /metrics");
     let mut result = String::new();
     {
         let mut local_metrics = metrics.lock().unwrap();
@@ -84,5 +86,6 @@ impl Sink for PrometheusSink {
 
     fn log(&mut self, log: &String) {
         // ignoring :-/ could at least count it?!
+        warn!("got log '{}' and did not handle it", log);
     }
 }

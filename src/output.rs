@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Subject {
     Battery,
     Grid,
@@ -9,7 +9,7 @@ pub enum Subject {
     Unknown,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum UnitOfMeasurement {
     V,
     A,
@@ -22,7 +22,7 @@ pub enum UnitOfMeasurement {
     Unknown,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Phase {
     L1,
     L2,
@@ -30,11 +30,13 @@ pub enum Phase {
     Irrelevant,
 }
 
+#[derive(Debug)]
 pub enum Source {
     Http,
     Serial,
 }
 
+#[derive(Debug)]
 pub struct Spec<'a> {
     pub name: &'a String,
     pub uid: &'a String,
@@ -130,12 +132,14 @@ impl Output {
     }
 
     pub fn sensor(&mut self, spec: Spec) {
+        trace!("sensor {:?}", spec);
         for sink in &mut self.sinks {
             sink.sensor(&spec);
         }
     }
 
     pub fn log(&mut self, log: String) {
+        trace!("log {:?}", log);
         for sink in &mut self.sinks {
             sink.log(&log);
         }

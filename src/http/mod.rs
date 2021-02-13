@@ -24,6 +24,7 @@ pub fn main(mut output: Output) {
 
 #[post("/events.json", format = "json", data = "<body>")]
 fn events_json(body: Json<Value>, output: State<Mutex<Output>>) -> Created<Json<Value>> {
+    trace!("http request on /events.json");
     output
         .lock()
         .unwrap()
@@ -63,8 +64,9 @@ fn logs_json(
     output: State<Mutex<Output>>,
     specs: State<data::HttpSpecs>,
 ) -> Created<Json<Value>> {
+    trace!("http request on /logs.json");
     let json: Value = body.into_inner();
-    println!("{}", serde_json::to_string(&json).unwrap());
+    debug!("{}", serde_json::to_string(&json).unwrap());
 
     let statuses = &json["module_statuses"];
 

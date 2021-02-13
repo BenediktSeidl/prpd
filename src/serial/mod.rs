@@ -15,13 +15,18 @@ pub fn check_crc(data: &Vec<u8>) -> bool {
     let mut crc_modbus = CRC::crc16modbus();
     crc_modbus.digest(&data.as_slice()[..len - 2]);
     let crc = crc_modbus.get_crc_vec_le();
-    return data.as_slice()[len - 2..] == crc;
+
+    let result = data.as_slice()[len - 2..] == crc;
+    trace!("crc checking return {} for {:?}", result, data);
+    return result;
 }
 
 pub fn main(mut output: Output) {
     let specs = data::get_specs();
 
     let port_name = env::var("PRPD_SERIAL_PORT").expect("need to set $PRPD_SERIAL_PORT");
+
+    debug!("opening serial port '{}'", port_name);
 
     let mut port = serialport::new(port_name, 9600)
         .timeout(Duration::from_millis(3000))
@@ -37,9 +42,9 @@ pub fn main(mut output: Output) {
         port.read_exact(request.as_mut_slice())
             .expect("Found no data!");
 
-        // find the first valid sequence of 8 elements: this is a request!
+        // find the first valid sequence of 8 elements, all requests have this size
         while !check_crc(&request) {
-            println!("search for start");
+            debug!("crc check was wrong, read one more byte and try again");
             let mut byte: Vec<u8> = vec![0u8; 1];
             port.read_exact(byte.as_mut_slice()).expect("error reading");
             request.rotate_left(1);
@@ -47,32 +52,47 @@ pub fn main(mut output: Output) {
         }
 
         // so we found a valid request, let's decode what we really have:
+        trace!("found a valid request");
         let device_address: u8 = request[0];
         let function_code: u8 = request[1];
         let starting_address: u16 = u16::from_be_bytes(request[2..4].try_into().unwrap());
         let quantity: u16 = u16::from_be_bytes(request[4..6].try_into().unwrap());
+        trace!(
+            "device_address: {}, function_code: {}, starting_address: {}, quantity: {}",
+            device_address,
+            function_code,
+            starting_address,
+            quantity
+        );
 
-        let mut response: Vec<u8> = vec![0; (5 + quantity * 2) as usize];
+        let response_length = (5 + quantity * 2) as usize;
+        trace!("awaiting response with length {}", response_length);
+        let mut response: Vec<u8> = vec![0; response_length];
         port.read_exact(response.as_mut_slice())
             .expect("error reading");
         if !check_crc(&response) {
-            println!("response crc wrong!");
+            debug!("response crc wrong!");
             continue;
         }
 
-        let len = request.len();
+        //let len = request.len();
         let response_device_address: u8 = request[0];
         let response_function_code: u8 = request[1];
         //let response_length: u8 = request[2];
+        trace!(
+            "got response for device {} function_code {}",
+            response_device_address,
+            response_function_code
+        );
 
         if response_device_address != device_address || response_function_code != function_code {
-            println!("response does not match request");
+            debug!("response does not match request");
             continue;
         }
 
         let raw_data = &response.as_slice()[3..response.len() - 2];
 
-        // we have the data, and currently it only consists of 4 bytes, so we can chunk it
+        // we have the data, and currently all readings consists of 4 bytes each, so we can chunk it
 
         for (i, data) in raw_data.chunks(4).enumerate() {
             let address = starting_address + i as u16 * 2u16;
