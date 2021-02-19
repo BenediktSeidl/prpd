@@ -16,10 +16,10 @@ jack at the front has some LEDs and is for the network communication!
 As mentioned in the Installation Manual the Sensors are connected as follow:
 
 ```
-[cable] -> [EM24]
-white/green -> 41
-green -> 42
-white/orange -> 43
+     [cable] -> [EM24]
+ white/green -> 41 (A-)
+       green -> 42 (B+)
+white/orange -> 43 (GND)
 ```
 
 The cable seems to be wired by `T568B` thus it appears that the following
@@ -27,9 +27,19 @@ pinout is used:
 
 ```
 [RJ45] -> [RS485]
-3 -> A-
-6 -> B+
-1 -> GND
+     3 -> A-
+     6 -> B+
+     1 -> GND
+```
+
+But as explained on [wikipedia](https://en.wikipedia.org/wiki/RS-485#Signals)
+the data lines of the transceiver SP3485 is swapped.
+
+```
+[RJ45] -> [RS485] -> [SP3485]
+     3 ->    A-   -> B (Inverting)
+     6 ->    B+   -> A (Non-Inverting)
+     1 ->   GND   -> GND
 ```
 
 ## Serial Port Settings
