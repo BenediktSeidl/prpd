@@ -19,6 +19,12 @@ personal setup, other configurations (uplink via WLAN, etc) are possible*
 Install OpenWrt as described in the [official
 documentation](https://openwrt.org/toh/gl.inet/gl-ar150).
 
+In order to be able to use the built in serial lines (as shown in the photo
+above) one needs to disable the standard serial console on the serial port.
+Please [follow the official
+documentation](https://openwrt.org/docs/guide-user/hardware/terminate.console.on.serial)
+on this.
+
 ```
 connections:
 WAN -> local lan
