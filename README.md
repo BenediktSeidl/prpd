@@ -6,6 +6,12 @@ at 2021-01-31.
 
 The Methods were tested with NEDAP PowerRouter `PR37Bi` Version `7.1.2`.
 
+## Status of this project
+
+I had this running for some time and it worked fine, but unfortunately the
+Battery of the PowerRouter broke and the PowerRouter does not support current
+Batteries, so the whole System was replaced, and I have no longer a system to
+test with.
 
 ## Getting the data from the PowerRouter
 
